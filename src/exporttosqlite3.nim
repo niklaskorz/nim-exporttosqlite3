@@ -32,6 +32,10 @@ macro exportToSqlite3*(input: untyped): untyped =
     context.result_double(nimResult)
   template resultBool(): untyped =
     context.result_int(int32(nimResult))
+  template resultException(): untyped =
+    let e = getCurrentException()
+    let error = cstring(repr(e))
+    context.result_error(error, int32(error.len))
 
   assert input.kind == nnkProcDef
   let ident = input[0]
@@ -90,8 +94,9 @@ macro exportToSqlite3*(input: untyped): untyped =
     newIdentDefs(ident"argc", ident"int32"),
     newIdentDefs(ident"argv", ident"PValueArg"),
   ]
+  let wrapperTry = newTree(nnkTryStmt, wrapperBody, newTree(nnkExceptBranch, getAst(resultException())))
   let wrapperPragmas = newTree(nnkPragma, ident"cdecl")
-  let wrapper = newProc(wrapperIdent, wrapperArgs, wrapperBody, nnkProcDef, wrapperPragmas)
+  let wrapper = newProc(wrapperIdent, wrapperArgs, wrapperTry, nnkProcDef, wrapperPragmas)
 
   let registerIdent = newIdentNode("registerSqlite3_" & strVal(ident))
   let registerArgs = [
