@@ -5,8 +5,6 @@ import db_sqlite
 import exporttosqlite3
 
 proc myNimFunction(greeting: string, name: string, age: int32): string {.exportToSqlite3.} =
-  if name == "Peter Parker":
-    raise ValueError.newException("oh damn")
   greeting & " " & name & " (age " & $age & ")"
 
 proc isOld(age: int32): bool {.exportToSqlite3.} = age > 20

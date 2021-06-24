@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.0"
+version       = "0.2.0"
 author        = "Niklas Korz"
 description   = "Export Nim functions to sqlite3"
 license       = "MIT"
